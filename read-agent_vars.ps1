@@ -1,0 +1,2 @@
+$Env:SSH_AGENT_PID = [System.Environment]::GetEnvironmentVariable("SSH_AGENT_PID", [System.EnvironmentVariableTarget]::User)
+$Env:SSH_AUTH_SOCK = [System.Environment]::GetEnvironmentVariable("SSH_AUTH_SOCK", [System.EnvironmentVariableTarget]::User)
