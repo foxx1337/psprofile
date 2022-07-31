@@ -1,5 +1,6 @@
 $mustStart = $false;
 $agentPidFile = "$HOME\.ssh\PID"
+$sshAgent = "D:\src\toolz\Git\usr\bin\ssh-agent.exe"
 
 $oldAgentPid = (Get-Content $agentPidFile -ErrorAction Ignore | Out-String).Trim()
 
@@ -30,13 +31,14 @@ if ($mustStart) {
 
     $newAgentPid = ""
     $authSock = ""
-    $output = (& 'C:\Program Files\Git\usr\bin\ssh-agent.exe').Split([System.Environment]::NewLine)
+    $output = (& $sshAgent).Split([System.Environment]::NewLine)
     if ($output[0] -match '^SSH_AUTH_SOCK=/tmp/(ssh-.+/agent.\d+); export SSH_AUTH_SOCK;$') {
         $authSock = "$Env:temp\" + $Matches[1] -replace "/", "\"
         Write-Output "Auth sock at $authSock"
         #$Env:SSH_AUTH_SOCK = $authSock
         #setx SSH_AUTH_SOCK $authSock
         [System.Environment]::SetEnvironmentVariable("SSH_AUTH_SOCK", "$authSock", [System.EnvironmentVariableTarget]::User)
+        $Env:SSH_AUTH_SOCK=$authSock
     } else {
         Write-Output "No auth sock"
     }
@@ -48,7 +50,10 @@ if ($mustStart) {
         #$Env:SSH_AGENT_PID = $newAgentPid
         #setx SSH_AGENT_PID $newAgentPid
         [System.Environment]::SetEnvironmentVariable("SSH_AGENT_PID", "$newAgentPid", [System.EnvironmentVariableTarget]::User)
+        $Env:SSH_AGENT_PID=$newAgentPid
     } else {
         Write-Output "No ssh-agent process!"
     }
 }
+
+Update-SessionEnvironment
